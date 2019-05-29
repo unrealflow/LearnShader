@@ -1,0 +1,18 @@
+{
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.settings.useSplitJSON": true,
+    "files.autoGuessEncoding": true,
+    "files.eol": "\r\n",
+    "workbench.colorTheme": "Dracula",
+    "editor.multiCursorModifier": "ctrlCmd",
+    "shader-toy.textures": {
+        "0": "file://./1.jpg",
+        "1": "file://./relative.jpg"
+      },
+    "shader-toy.useInShaderTextures": true,
+    "terminal.integrated.shell.windows": "C:\\Windows\\System32\\cmd.exe",
+    "editor.fontFamily": "楷体,楷体,楷体",
+    "editor.wordWrap": "bounded",
+    "terminal.integrated.fontSize": 16,
+    "editor.mouseWheelZoom": true,
+}
