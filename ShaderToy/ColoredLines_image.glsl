@@ -1,5 +1,5 @@
 
-#iChannel0 buf://./ColoredLines_buff.glsl
+#iChannel0 "file://./ColoredLines_buff.glsl"
 
 
 //bloom and DOF. Check buffer's #define to tweak the shape
