@@ -5,7 +5,7 @@
 
 //Velocity handling
 #iChannel0 "self"
-#iChannel1 "file://./2.jpg"
+#iChannel1 "file://./3.jpg"
 const float initalSpeed = 10.;
 #define time iTime
 
