@@ -1,33 +1,17 @@
-#iChannel0 "self"
+#define PI 3.141592654
 
-
-
-
-
-
-float noise(float a)
+vec3 noise(vec2 uv)
 {
-    float k=fract(sin(1311.33*a+23.123+iTime*0.001)*13.1);
-    return k;
+    float pTime = floor(2.0*iTime);
+    float n_1 = sin(uv.x + pTime) * 20.*PI;
+    float n_2 = sin(n_1 + uv.y + pTime) * 20.*PI;
+    float n_3 = sin(n_1*uv.x+n_2*uv.y+n_2+n_1)*20.*PI;
+    float n_4 = sin(n_2*uv.x+n_3*uv.y+n_2+n_3)*20.*PI;
+    return vec3(sin(n_4), cos(n_4),sin(n_3+n_4));
 }
 
-vec3 noise3(vec2 uv)
-{
-    float t1=noise(uv.x);
-    float t2=noise(uv.y);
-    float t3=noise(t1+t2);
-    return vec3(noise(t1*uv.x+t2*uv.y),noise(t3+uv.x),noise(t3+uv.y));
-}
 void main()
 {
-    //(0,0) ~(1,1)
-    vec2 uv=gl_FragCoord.xy / iResolution.xy-vec2(0.5);
-    //(0,0,0) ~(1,1,1)
-    vec2 nk=2.0*noise3(uv).xy-vec2(1.0);
-    nk=pow(nk,vec2(1.));
-    float d=distance(uv,nk.xy);
-
-    // gl_FragColor=0.5*texture(iChannel0,nk)+0.5*vec4(d);
-
-    gl_FragColor=vec4(d);
+    vec2 uv = gl_FragCoord.xy / iResolution.xy;
+    gl_FragColor = vec4(noise(uv), 1.0);
 }

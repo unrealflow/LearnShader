@@ -1,6 +1,5 @@
-#iChannel0 file://./image/1.jpg
-// #iChannel0 https://66.media.tumblr.com/tumblr_mcmeonhR1e1ridypxo1_500.jpg
-// #iChannel2 buf://./other/shader.glsl
+#iChannel0 "file://./image/1.jpg"
+
 
 float cartoon(float _in){
   float temp=0.3;

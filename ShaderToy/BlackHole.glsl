@@ -1,5 +1,5 @@
 
-#iChannel0 file://./image/timg.jpg
+#iChannel0 "file://./3.jpg"
 
 #define AA 2  //change to 1 to increase performance
 
