@@ -41,45 +41,57 @@ float shapeVar = 0.;
 
 float mg2(vec2 p){return dot(p,p);}
 
+//p为视线末端坐标
 vec2 map(vec3 p)
 {
     vec3 p2 = p;
+     //偏移矫正
     p2.xy -= disp(p.z).xy;
+    //云的流动效果
     p.xy *= rot(sin(p.z+iTime)*0.15 + iTime*0.09);
+    //cl代表与中心的的距离的平方
     float cl = mag2(p2.xy);
     float d = 0.;
     p *= .61;
     float z = 1.;
     float trk = 1.;
+    //多层云雾
     for(int i = 0; i < 5; i++)
     {
+        //prim1设定颜色对浓度的影响
 		p += sin(p.zxy*0.75*trk + iTime*trk*.8)*(0.1 + prm1*0.2);
         d -= abs(dot(cos(p), sin(p.yzx))*z);
+        //振幅减小
         z *= 0.57;
+        //频率增大
         trk *= 1.4;
         p = p*m3;
     }
     d = abs(d + prm1*3.)+ prm1*.3 - 2.5 + bsMo.y;
     return vec2(d + cl*.2 + 0.25, cl);
 }
-
+//计算显示颜色，ro为摄像机位置,rd为视线方向
 vec4 render( in vec3 ro, in vec3 rd, float time )
 {
 	vec4 rez = vec4(0);
     const float ldst = 8.;
+    //摄像机前方ldst处
 	vec3 lpos = vec3(disp(time + ldst)*0.5, time + ldst);
 	float t = 1.5;
 	float fogT = 0.;
+    //添加不同深度的颜色
 	for(int i=0; i<130; i++)
 	{
 		if(rez.a > 0.99)break;
-
+        //当前视线末端坐标
 		vec3 pos = ro + t*rd;
+        //当前视线位置对应的云朵密度和与中心的距离
         vec2 mpv = map(pos);
 		float den = clamp(mpv.x-0.3,0.,1.)*1.12;
 		float dn = clamp((mpv.x + 2.),0.,3.);
         
 		vec4 col = vec4(0);
+        //云雾基础颜色
         if (mpv.x > 0.6)
         {
         
@@ -90,10 +102,11 @@ vec4 render( in vec3 ro, in vec3 rd, float time )
             dif += clamp((den - map(pos+.35).x)/2.5, 0.001, 1. );
             col.xyz *= den*(vec3(0.005,.045,.075) + 1.5*vec3(0.033,0.07,0.03)*dif);
         }
-		
+		//深度指数雾
 		float fogC = exp(t*0.2 - 2.2);
 		col.rgba += vec4(0.06,0.11,0.11, 0.1)*clamp(fogC-fogT, 0., 1.);
 		fogT = fogC;
+        //根据alpha通道混合颜色
 		rez = rez + col*(1. - rez.a);
 		t += clamp(0.5 - dn*dn*.05, 0.09, 0.3);
 	}
@@ -126,6 +139,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     vec2 p = q - 0.5;
 	p.x *= iResolution.x/iResolution.y;
     vec2 mous = iMouse.xy/iResolution.xy;
+    //mo代表漩涡中心，须排除初始位置，以窗口中心为(0,0)为标
 	vec2 mo = mous - 0.5;
     bsMo = mo;
     mo = (mo==vec2(-0.5))?mo=vec2(0.12, 0.15):mo;
@@ -134,29 +148,37 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	mo.y = clamp(mo.y*0.6-.5,-4. ,.15 );
     
     float time = iTime*3.;
+    //ro代表摄像机在空间中前进的位置，z为前进距离，xy为侧向偏移
     vec3 ro = vec3(0,0,time);
     
-    
+    //镜头晃动
     ro += vec3(sin(iTime)*0.5,sin(iTime*1.)*0.,0);
         
     float dspAmp = .85;
+     //镜头方向偏移
     ro.xy += disp(ro.z)*dspAmp;
     float tgtDst = 3.5;
     
-    
+    //计算摄像机朝向
     vec3 target = normalize(ro - vec3(disp(time + tgtDst)*dspAmp, time + tgtDst));
+    //鼠标的x值控制镜头
     ro.x -= bsMo.x*2.;
+    //计算正交向量，右向，上向
     vec3 rightdir = normalize(cross(target, vec3(0,1,0)));
     vec3 updir = normalize(cross(rightdir, target));
     rightdir = normalize(cross(updir, target));
+    //由当前像素的屏幕坐标计算视线方向
 	vec3 rd=normalize((p.x*rightdir + p.y*updir)*1. - target);
+    //以旋转的方式偏移
     rd.xy *= rot(-disp(time + 3.5).x*0.2 + bsMo.x);
     prm1 = smoothstep(-0.4, 0.4,sin(iTime*0.3));
+    //计算显示颜色，ro为摄像机位置,rd为视线方向
 	vec4 scn = render(ro, rd, time);
-		
+	
+    //根据时间插值变幻颜色
     vec3 col = scn.rgb;
     col = iLerp(col.bgr, col.rgb, clamp(1.-prm1,0.05,1.));
-    
+    //伽马矫正
     col = pow(col, vec3(.55,0.65,0.6))*vec3(1.,.97,.9);
 
     col *= pow( 16.0*q.x*q.y*(1.0-q.x)*(1.0-q.y), 0.12)*0.7+0.3; //Vign
