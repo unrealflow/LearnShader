@@ -56,7 +56,7 @@ vec2 map(vec3 p)
     float z = 1.;
     float trk = 1.;
     //多层云雾
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < 3; i++)
     {
         //prim1设定颜色对浓度的影响
 		p += sin(p.zxy*0.75*trk + iTime*trk*.8)*(0.1 + prm1*0.2);
@@ -77,10 +77,10 @@ vec4 render( in vec3 ro, in vec3 rd, float time )
     const float ldst = 8.;
     //摄像机前方ldst处
 	vec3 lpos = vec3(disp(time + ldst)*0.5, time + ldst);
-	float t = 1.5;
+	float t = 7.5;
 	float fogT = 0.;
     //添加不同深度的颜色
-	for(int i=0; i<130; i++)
+	for(int i=0; i<5; i++)
 	{
 		if(rez.a > 0.99)break;
         //当前视线末端坐标
