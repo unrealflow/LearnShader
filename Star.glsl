@@ -17,12 +17,12 @@ vec3 DrawCenter(float len)
 vec3 DrawStar(float len,float angle)
 {
     vec3 baseColor=vec3(0.0,0.3,0.7);
-    float fre1=10.0;
+    float fre1=30.0;
     float fre2=20.0;
-    float radius=0.05;
-    float m=radius/(radius+abs(sin(len*fre1*1.0-0.2*iTime)));
+    float radius=0.03;
+    float m=radius/(radius+abs(sin(len*fre1*1.0-0.5*iTime)));
     float n=radius/(radius+abs(sin(angle*fre2+len*100.0)));
-    float f6=max(m*n-0.03*len,0.0)*100.0;
+    float f6=max(m*n-0.1*len,0.0)*100.0;
     return baseColor*f6;
 }
 
@@ -41,10 +41,9 @@ float fbm(float x,float ka,float kw,float kb)
     }
     return res;
 }
-float map(float l)
+float map(float l) 
 {
     float lm=1.0;
-
     l=clamp(1e-1,lm,l);
     float lm2=lm*lm;
     float lm4=lm2*lm2;
@@ -61,22 +60,48 @@ vec3 DrawFlow(vec2 uv,float weight)
 
     return baseColor;
 }
-
+vec3 DrawCloud(float dis,float angle)
+{
+    vec3 baseColor=vec3(0.0,0.0,0.0);
+    vec3 cloudColor=vec3(0.0,0.3,0.7);
+    float x=angle+dis;
+    float fre=2.0;
+    float ap=1.0;
+    for(int i=1;i<5;i++)
+    {
+        float k=1.0+sin(fre*x+0.3*iTime);
+        k=k*k*0.25;
+        float p=fract(k+dis/float(i+1));
+        p=p*(1.0-p);
+        p=smoothstep(0.1,0.25,p);
+        baseColor+=ap*cloudColor*p;
+        fre*=-2.0;
+        ap*=0.5;
+    }
+    return baseColor*1.0;
+}
 void main(){
     vec2 uv=gl_FragCoord.xy/iResolution.xy;
     vec2 coord=uv-0.5;
-    coord.x*=iResolution.x/iResolution.y;
+    if(iResolution.y>iResolution.x)
+    {
+         coord.x*=iResolution.x/iResolution.y;
+    }
+    else
+    {
+         coord.y/=iResolution.x/iResolution.y;
+    }
     float len=length(coord);
     float angle=PI-acos(coord.x/len)*sign(coord.y);
 
     vec3 baseColor=vec3(0.0,0.0,0.0);
     float dis=map(len);
     baseColor+=DrawStar(dis/10.0,angle);
-    baseColor+=vec3(0.0,0.3,0.7)*dis/10.0;
-    // baseColor+=DrawCenter(len);
-    // baseColor+=/100.0;
-    // vec3 preColor=texture(iChannel0,uv).xyz;
-    // baseColor+=DrawFlow(uv,0.3);
-    // baseColor=mix(baseColor,preColor,0.9);
+    // baseColor+=vec3(0.0,0.3,0.7)*dis/10.0;
+    baseColor+=DrawCloud(dis,angle)*0.3;
+    vec3 fogColor=vec3(0.3,1.5,3.0);
+    float fogC=pow(0.97,dis);
+    baseColor=mix(fogColor,baseColor,fogC);
+    // baseColor*=DrawStar(dis/10.0,angle);
     gl_FragColor=vec4(baseColor,1.0);
 }
