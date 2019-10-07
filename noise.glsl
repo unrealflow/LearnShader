@@ -72,13 +72,31 @@ vec3 norm_noise(vec2 uv)
     vec3 p=vec3(r*sin(t3),r*cos(t3),t5);
     return abs(p);
 }
+vec3 fbm_noise(vec2 coord)
+{
+    float len=length(coord);
+    vec3 kp=vec3(coord,len+1.0);
+    float fre=1.0;
+    float ap=0.5;
+    vec3 d=vec3(1.0);
+    for(int i=0;i<5;i++)
+    {
+        kp=mix(kp,kp.yzx,0.1);
+        kp+=sin(0.75*kp.zxy * fre+.3*iTime);
+        d -= abs(cross(cos(kp), sin(kp.yzx)) * ap);
+        fre*=-2.0;
+        ap*=0.5;
+    }
+    return vec3((d));
+}
 
 void main()
 {
     vec2 uv = gl_FragCoord.xy / iResolution.xy;
     vec2 coord=uv*2.0-1.0;
     coord.x*=iResolution.x/iResolution.y;
-    vec3 color=norm_noise(coord+iTime);
-    color=mix(color,texture(iChannel0,uv).xyz,0.99);
+    // vec3 color=norm_noise(coord+iTime);
+    vec3 color=fbm_noise(coord*1.0);
+    // color=mix(color,texture(iChannel0,uv).xyz,0.99);
     gl_FragColor = vec4(color, 1.0);
 }
