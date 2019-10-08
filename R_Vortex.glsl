@@ -68,6 +68,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
     vec3 ro=normalize(vec3(coord,1.0));
     
 
-    fragColor=draw(ro)*0.1+0.9*texture(iChannel0,uv);
+    fragColor=draw(ro)*0.1+0.9*vec4(texture(iChannel0,uv).xyz,1.0);
 
 }

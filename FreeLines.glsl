@@ -61,9 +61,10 @@ vec3 track(vec2 inPos, vec2 coord)
     return color;
 }
 
-void main()
-{
-    vec2 uv = gl_FragCoord.xy / iResolution.xy;
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord){
+
+    vec2 uv = fragCoord.xy / iResolution.xy;
     float f = iResolution.x / iResolution.y;
     vec2 coord = uv * 2.0 - vec2(1.0);
     coord.x *= f;
@@ -76,5 +77,5 @@ void main()
         color += mix(tpColor, tpColor.zxy, fc);
     }
     color += texture(iChannel0, uv).xyz * 0.99;
-    gl_FragColor = vec4(color, 1.0);
+    fragColor = vec4(color, 1.0);
 }

@@ -34,16 +34,15 @@ vec3 draw_particles(vec2 uv, vec2 coord)
     if(dis>0.003)
     {
         float stride=0.006;
-        baseColor+=texture2D(iChannel0,uv-stride*dir).xyz;
+        baseColor+=texture(iChannel0,uv-stride*dir).xyz;
         baseColor*=0.9975;
     }
     return baseColor;
 }
 
-void main()
-{
+void mainImage(out vec4 fragColor, in vec2 fragCoord){
 
-    vec2 uv = gl_FragCoord.xy / iResolution.xy;
+    vec2 uv = fragCoord.xy / iResolution.xy;
     float f = iResolution.x / iResolution.y;
     vec2 coord = uv - vec2(0.5,0.3);
     coord.x *= f;
@@ -51,8 +50,8 @@ void main()
     vec3 color2 = draw_particles(uv, coord);
 
     vec3 t_color = color1 + color2;
-    // t_color=texture2D(iChannel0,uv).xyz;
-    vec3 preColor = texture2D(iChannel0, uv).xyz;
-    t_color=mix(t_color,preColor.xyz,0.1);
-    gl_FragColor = vec4(t_color, 1.0);
+    // t_color=texture(iChannel0,uv).xyz;
+    vec3 preColor = texture(iChannel0, uv).xyz;
+    t_color=mix(t_color,preColor.xyz,0.3);
+    fragColor = vec4(t_color, 1.0);
 }
