@@ -3,7 +3,7 @@
  * License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
  * Contact: tdmaav@gmail.com
  */
-#iChannel0 "file://./2.jpg"
+// #iChannel0 "file://./2.jpg"
 
 #define HASHSCALE3 vec3(.1031, .1030, .0973)
 const float PI = 3.141592;

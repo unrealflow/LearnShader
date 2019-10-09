@@ -6,6 +6,11 @@ float noise(float a)
     float k = fract(sin(1331.3333 * a + 23.123) * 1331.13333);
     return k;
 }
+vec3 norm_fract(vec3 x)
+{
+    vec3 p=fract(x);
+    return 8.0*p*(1.0-p)-1.0;
+}
 vec2 Rot(vec2 v, float angle)
 {
     return vec2(v.x * cos(angle) + v.y * sin(angle),
@@ -52,7 +57,7 @@ vec3 DrawCloud(float dis, float angle, vec2 coord)
     float fre = 2.0;
     float ap = 1.0;
     float d = float(0.0);
-    coord = Rot(coord, 0.1 * iTime);
+    coord = Rot(coord, 0.3 * iTime);
     vec3 kp = vec3(coord * max(dis, 1.0), dis);
     for (int i = 1; i < 5; i++) {
         float k = 1.0 + sin(fre * x + 0.3 * iTime);
@@ -86,9 +91,9 @@ vec3 Render(vec2 coord)
     return baseColor;
 }
 
-void main()
+void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
-    vec2 uv = gl_FragCoord.xy / iResolution.xy;
+    vec2 uv = fragCoord.xy / iResolution.xy;
     vec2 coord = uv - 0.5;
     if (iResolution.y > iResolution.x) {
         coord.x *= iResolution.x / iResolution.y;
@@ -96,5 +101,5 @@ void main()
         coord.y /= iResolution.x / iResolution.y;
     }
     vec3 baseColor = Render(coord);
-    gl_FragColor = vec4(baseColor, 1.0);
+    fragColor = vec4(baseColor*1.3, 1.0);
 }

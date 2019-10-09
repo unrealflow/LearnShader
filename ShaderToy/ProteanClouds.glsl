@@ -120,6 +120,7 @@ vec4 render(in vec3 ro, in vec3 rd, float time)
             col.rgb *= linstep(4., -2.5, mpv.x) * 2.3;
             float dif = clamp((den - map(pos + .8).x) / 9., 0.001, 1.);
             dif += clamp((den - map(pos + .35).x) / 2.5, 0.001, 1.);
+            // dif=1.0;
             col.xyz *= den * (vec3(0.005, .045, .075) + 1.5 * vec3(0.033, 0.07, 0.03) * dif);
         }
         //深度指数雾

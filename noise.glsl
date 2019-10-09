@@ -8,59 +8,36 @@ float fract2(float x)
 {
     return 2.0*abs(fract(x)-0.5);
 }
-// float noise(float x)
-// {
-//     return fract2(fract2(x*k+bias)+bias);
-// }
-
-// vec3 noise(vec2 uv)
-// {
-//     // float pTime = floor(2.0*iTime);
-//     float pTime=0.01*iTime;
-    
-//     float n1=1.0-2.0*noise(uv.y);
-//     float n2=1.0-2.0*noise(uv.x);
-//     float n3=1.0-2.0*noise(n1+n2+pTime);
-
-//     // uv=rot(n3*PI*2.)*uv;
-//     float n4=1.0-2.0*noise(uv.x+n3);
-//     float n5=1.0-2.0*noise(uv.y+n4);
-//     float n6=1.0-2.0*noise(pTime+n5);
-//     n6=n6;
-//     float r=sqrt(1.0-n6*n6);
-//     n5*=PI;
-//     vec3 p=vec3(r*sin(n5),r*cos(n5),n6);
-//     // p=vec3(n6);
-//     return abs(p);
-
-// }
-// vec3 noise_bad(vec2 uv)
-// {
-//     // float pTime = floor(2.0*iTime);
-//     float pTime=0.01*iTime;
-    
-//     float n1=1.0-2.0*noise(uv.y);
-//     float n2=1.0-2.0*noise(uv.x);
-//     float n3=1.0-2.0*noise(n1+n2+pTime);
-
-//     // uv=rot(n3*PI*2.)*uv;
-//     float n4=1.0-2.0*noise(uv.x+n3);
-//     float n5=1.0-2.0*noise(uv.y+n4);
-//     float n6=1.0-2.0*noise(pTime+n5);
-//     n5*=PI;
-//     n6*=PI;
-//     vec3 p=vec3(cos(n6)*sin(n5),cos(n6)*cos(n5),sin(n6));
-//     // p=vec3(n6);
-//     return abs(p);
-
-// }
-
+vec3 norm_fract(vec3 x)
+{
+    vec3 p=fract(x);
+    return 8.0*p*(1.0-p)-1.0;
+}
 float noise(float a)
 {
-    float k = fract(fract(131.33 * a + 23.123) * 131.133);
+    float k = fract(sin(131.33 * a + 23.123) * 131.133);
     return k;
 }
-
+vec3 noise(vec3 a)
+{
+    vec3 k = fract(sin(131.33 * a + 23.123) * 131.133);
+    return k;
+}
+vec3 noise3(vec2 coord)
+{
+    float len=length(coord);
+    vec3 kp=vec3(coord,len+1.0);
+    float bias=noise(kp.z);
+    float fre=1.0;
+    float ap=1.0;
+    for(int i=0;i<2;i++)
+    {
+        kp+=sin(kp.zxy*fre+bias*PI*2.0);
+        kp=cross(cos(kp),sin(kp.yzx))*ap;
+        kp=noise(kp);
+    }
+    return kp;
+}
 vec3 norm_noise(vec2 uv)
 {
     float t1 = PI*noise(uv.x);
@@ -72,7 +49,7 @@ vec3 norm_noise(vec2 uv)
     vec3 p=vec3(r*sin(t3),r*cos(t3),t5);
     return abs(p);
 }
-vec3 fbm_noise(vec2 coord)
+vec3 fbm_noise(vec2 coord,float ft)
 {
     float len=length(coord);
     vec3 kp=vec3(coord,len+1.0);
@@ -82,8 +59,8 @@ vec3 fbm_noise(vec2 coord)
     for(int i=0;i<5;i++)
     {
         kp=mix(kp,kp.yzx,0.1);
-        kp+=sin(0.75*kp.zxy * fre+.3*iTime);
-        d -= abs(cross(cos(kp), sin(kp.yzx)) * ap);
+        kp+=sin(0.75*kp.zxy * fre+ft*iTime);
+        d -= abs(cross(norm_fract(kp), norm_fract(kp.yzx)) * ap);
         fre*=-2.0;
         ap*=0.5;
     }
@@ -95,8 +72,8 @@ void main()
     vec2 uv = gl_FragCoord.xy / iResolution.xy;
     vec2 coord=uv*2.0-1.0;
     coord.x*=iResolution.x/iResolution.y;
-    // vec3 color=norm_noise(coord+iTime);
-    vec3 color=fbm_noise(coord*1.0);
-    // color=mix(color,texture(iChannel0,uv).xyz,0.99);
+    vec3 color=noise3(coord);
+    // vec3 color=fbm_noise(coord*10.0,0.0);
+    // color=mix(color,texture(iChannel0,uv).xyz,0.95);
     gl_FragColor = vec4(color, 1.0);
 }
