@@ -11,7 +11,7 @@ vec2 map(vec3 pos)
     float density = 1.0;
     float fre = 1.0;
     float ap = 0.5;
-    float timeSpeed = 0.3;
+    float timeSpeed = 0.9;
     vec3 kp = vec3(pos);
     kp.z *= 5.2;
     kp.xy=Rot(kp.xy,sin(0.1*iTime+pos.z));
@@ -30,8 +30,8 @@ vec2 map(vec3 pos)
 
 vec3 RayMarch(vec2 coord)
 {
-    vec3 baseColor = vec3(0.2,0.5,1.0);
-    vec3 fogColor = 0.3*vec3(0.2,0.5,1.0);
+    vec3 baseColor = vec3(0.8,0.8,1.0);
+    vec3 fogColor = 0.3*vec3(0.0,0.5,1.0);
     vec3 orientation = normalize(vec3(coord, 1.0));
 
     vec3 pos = vec3(coord, 0.0);
@@ -44,9 +44,17 @@ vec3 RayMarch(vec2 coord)
     // float depth2=0.1+1.0/(len+0.1);
     for (int i = 0; i < 4; i++) {
 
-        vec2 k = map(pos + (trace) * orientation);
+        vec3 _pos=pos + (trace) * orientation;
+        vec2 k = map(_pos);
+        vec2 k1=map(_pos+0.09);
+        vec2 k2=map(_pos-0.09);
+
         
-        vec3 stage1 = baseColor* k.x*(1.0 - alpha) ;
+        vec3 stage1 = baseColor* k.x;
+
+        stage1=mix(stage1,vec3(1.0,0.5,0.0),0.2*(k1.x-k.x));
+        // stage1=mix(stage1,vec3(0.0,0.5,1.0),0.2*(k2.x-k.x));
+        stage1*=(1.0 - alpha) ;
         // stage=mix(stage,stage1,0.5);
         color+=(1.0-alpha)*mix(color,stage1,1.0-alpha);
         alpha += (1.0-alpha)*k.x;
