@@ -36,18 +36,27 @@ vec3 noise3(vec2 coord)
         kp=cross(cos(kp),sin(kp.yzx))*ap;
         kp=noise(kp);
     }
-    return kp;
+    return kp*2.0-1.0;
 }
-vec3 norm_noise(vec2 uv)
+vec3 norm_noise(vec2 coord)
 {
-    float t1 = PI*noise(uv.x);
-    float t2 = PI*noise(uv.y);
-    float t3 = 2.0*PI*noise(t2 * uv.x - t1 * uv.y);
-    float t4= 2.0* noise(t1 * uv.x + t2 * uv.y)-1.0;
+    float len=length(coord);
+    vec3 kp=vec3(coord,len+1.0);
+    float bias=noise(kp.z);
+    float fre=1.0;
+    float ap=1.0;
+    for(int i=0;i<2;i++)
+    {
+        kp+=sin(kp.zxy*fre+bias*PI*2.0);
+        kp=cross(cos(kp),sin(kp.yzx))*ap;
+        kp=noise(kp);
+    }
+    float t3 = 2.0*PI*kp.x;
+    float t4= 2.0* kp.y-1.0;
     float t5=t4;
     float r=sqrt(1.0-t5*t5);
     vec3 p=vec3(r*sin(t3),r*cos(t3),t5);
-    return abs(p);
+    return (p);
 }
 vec3 fbm_noise(vec2 coord,float ft)
 {
@@ -73,6 +82,7 @@ void main()
     vec2 coord=uv*2.0-1.0;
     coord.x*=iResolution.x/iResolution.y;
     vec3 color=noise3(coord);
+    // vec3 color=norm_noise(coord);
     // vec3 color=fbm_noise(coord*10.0,0.0);
     // color=mix(color,texture(iChannel0,uv).xyz,0.95);
     gl_FragColor = vec4(color, 1.0);

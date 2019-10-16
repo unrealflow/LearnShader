@@ -3,7 +3,7 @@
 // Volumetric cloud tunnel, a single light source, lightning and raindrops.
 //
 // The code is a bit messy, but in this case it's visuals that count. :P
-#iChannel0 "file://./image/noise_256.png"
+#iChannel0 "file://./ShaderToy/image/noise_dl.png"
 
 #define pi 3.1415926535897932384626433832795
 
