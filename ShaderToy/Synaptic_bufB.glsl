@@ -11,7 +11,7 @@
 	to move more than one pixel per frame while still
 	leaving a solid trail.
 */
-#iChannel0 "file://./Synaptic_bufA.glsl"
+#iChannel0 "file://./ShaderToy/Synaptic_bufA.glsl"
 #iChannel1 "self"
 #define time iTime
 

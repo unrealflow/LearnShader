@@ -1,6 +1,7 @@
 // #ixChannel0 "file://./Smoke/bufA.glsl"
 #iChannel0 "file://./smoke_bufA.glsl"
 #iChannel1 "self"
+
 vec3 norm_fract(vec3 x)
 {
     vec3 p=fract(x);
@@ -24,29 +25,46 @@ vec3 fbm_noise(vec2 coord,float ft)
     return vec3((d));
 }
 
-float fract2(float x)
+#define c_p 0.3
+vec4 DrawEmit0_c(vec2 coord)
 {
-    float k=fract(x/3.1415926);
 
-    return 2.0*abs(2.0*k-1.0)-1.0;
-}
-#define c_p 0.05
-vec4 DrawEmit0(vec2 coord)
-{
-    vec2 target=coord-vec2(-0.0-0.5*fract2(0.1*iTime),-1.0);
-    vec4 color=c_p*vec4(-0.5,1.0,0.0,0.0);
+    vec2 target=coord-vec2(-0.0-0.5*cos(0.3*iTime),0.5*sin(0.3*iTime));
+    vec4 color=c_p*vec4(0.0,1.0,0.0,0.0);
     float m2=dot(target,target);
-    return color*smoothstep(0.001,0.0,m2);
+    float power=smoothstep(0.001,0.0,m2);
+    return color*power;
 }
-vec4 DrawEmit1(vec2 coord)
+vec4 DrawEmit1_c(vec2 coord)
 {
-    vec2 target=coord-vec2(0.0+0.5*fract2(0.1*iTime),-1.0);
-    vec4 color=c_p*vec4(1.0,-0.5,0.0,0.0);
+
+    vec2 target=coord-vec2(0.0+0.5*cos(0.3*iTime),-0.5*sin(0.3*iTime));
+    vec4 color=c_p*vec4(1.0,0.0,0.0,0.0);
     float m2=dot(target,target);
-    return color*smoothstep(0.001,0.0,m2);
+    float power=smoothstep(0.001,0.0,m2);
+    return color*power;
+}
+vec4 BlurSampler(sampler2D tex,vec2 uv,vec2 w)
+{
+    vec4 tc=texture(tex,uv);
+    vec4 tu=texture(tex,uv+vec2(0.0,w.y));
+    vec4 td=texture(tex,uv-vec2(0.0,w.y));
+    vec4 tl=texture(tex,uv-vec2(w.x,0.0));
+    vec4 tr=texture(tex,uv+vec2(w.x,0.0));
+    vec4 tul=texture(tex,uv+vec2(-w.x,w.y));
+    vec4 tdl=texture(tex,uv-vec2(-w.x,w.y));
+    vec4 tdr=texture(tex,uv-vec2(w.x,w.y));
+    vec4 tur=texture(tex,uv+vec2(w.x,w.y));
+    return 0.36*tc+0.12*(tu+td+tl+tr)+0.04*(tul+tur+tdl+tdr);
 }
 void mainImage(out vec4 fragColor,in vec2 fragCoord)
 {
+    const float k=0.998;
+    if (iFrame < 20)
+    {
+        fragColor = vec4(0.0001/(1.0-k));
+        return;
+    }
     const float dt=0.14;
     vec2 w=1.0/iResolution.xy;
     vec2 uv=fragCoord/iResolution.xy;
@@ -57,18 +75,14 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord)
     
     vec2 vel=data.xy;
     // fragColor=vec4(t0.z);
-    vec4 color=DrawEmit0(coord);
-    color+=DrawEmit1(coord);
+    vec4 color=vec4(0.0001);
+    color+=DrawEmit0_c(coord);
+    color+=DrawEmit1_c(coord);
     vec2 t_uv=uv - dt*vel*w*3.;
-    t_uv+=0.0003*fbm_noise(uv,0.3).xy;
-    color+= textureLod(iChannel1,t_uv , 0.)*0.999; //advection
+    // t_uv+=0.0003*fbm_noise(uv,0.3).xy;
+    color+= BlurSampler(iChannel1,t_uv , w)*k; //advection
 
-    vec4 tu=texture(iChannel1,t_uv+vec2(0.0,w.y));
-    vec4 td=texture(iChannel1,t_uv-vec2(0.0,w.y));
-    vec4 tl=texture(iChannel1,t_uv-vec2(w.x,0.0));
-    vec4 tr=texture(iChannel1,t_uv+vec2(w.x,0.0));
-    color=0.2*(color+tl+tr+tu+td);
-    color=max(vec4(0.0),color);
+    color=clamp(color,vec4(0.0),vec4(1.0));
     fragColor=vec4(color.xyz,1.0);
 }
 

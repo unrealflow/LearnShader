@@ -5,7 +5,7 @@
 
 //Velocity handling
 #iChannel0 "self"
-#iChannel1 "file://./image/noise_256.png"
+#iChannel1 "file://./ShaderToy/image/noise_256.png"
 const float initalSpeed = 10.;
 #define time iTime
 

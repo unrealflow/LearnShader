@@ -59,7 +59,7 @@ void mainImage(out vec4 o, vec2 O)
     V *= .7;
     
     t *= .1;
-    V += iMouse.xy/iResolution.xy;
+    // V += iMouse.xy/iResolution.xy;
     float sgn = 1.;
     
     o = vec4(0.);

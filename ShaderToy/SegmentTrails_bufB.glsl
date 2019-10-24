@@ -1,4 +1,4 @@
-#iChannel0 "file://./SegmentTrails_bufA.glsl"
+#iChannel0 "file://./ShaderToy/SegmentTrails_bufA.glsl"
 #iChannel1 "self"
 
 #define clamps(x) clamp(x,0.,1.)

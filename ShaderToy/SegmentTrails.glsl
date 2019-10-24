@@ -1,5 +1,5 @@
-#iChannel0 "file://./SegmentTrails_bufA.glsl"
-#iChannel1 "file://./SegmentTrails_bufB.glsl"
+#iChannel0 "file://./ShaderToy/SegmentTrails_bufA.glsl"
+#iChannel1 "file://./ShaderToy/SegmentTrails_bufB.glsl"
 
 #define clamps(x) clamp(x,0.,1.)
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {

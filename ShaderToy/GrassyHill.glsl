@@ -1,7 +1,16 @@
+// Rolling hills. By David Hoskins, November 2013.
+// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+
 // https://www.shadertoy.com/view/Xsf3zX
 
-// Uses eiffie's 'Circle of Confusion' function for blurred ray marching into the grass.
-// #define STEREO 1.0
+// v.2.00 Uses eiffie's 'Circle of Confusion' function
+//		  for blurred ray marching into the grass.
+// v.1.02 Camera aberrations.
+// v.1.01 Added better grass, with wind movement.
+
+// For red/cyan 3D...
+//#define STEREO
+
 #define MOD2 vec2(3.07965, 7.4235)
 float PI  = 4.0*atan(1.0);
 vec3 sunLight  = normalize( vec3(  0.35, 0.2,  0.3 ) );
@@ -11,7 +20,7 @@ const mat2 rotate2D = mat2(1.932, 1.623, -1.623, 1.952);
 float gTime = 0.0;
 
 //--------------------------------------------------------------------------
-// Noise functions
+// Noise functions...
 float Hash( float p )
 {
 	vec2 p2 = fract(vec2(p) / MOD2);
@@ -281,17 +290,17 @@ vec3 PostEffects(vec3 rgb, vec2 xy)
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 	float m = (iMouse.x/iResolution.x)*300.0;
-	float gTime = (iTime*1.0+m+2352.0)*.006;
+	float gTime = (iTime*5.0+m+2352.0)*.006;
     vec2 xy = fragCoord.xy / iResolution.xy;
 	vec2 uv = (-1.0 + 2.0 * xy) * vec2(iResolution.x/iResolution.y,1.0);
 	vec3 camTar;
 	
-	// if (xy.y < .13 || xy.y >= .87)
-	// {
-	// 	// Top and bottom cine-crop - what a waste! :)
-	// 	fragColor=vec4(vec4(0.0));
-	// 	return;
-	// }
+	if (xy.y < .13 || xy.y >= .87)
+	{
+		// Top and bottom cine-crop - what a waste! :)
+		fragColor=vec4(vec4(0.0));
+		return;
+	}
 
 	#ifdef STEREO
 	float isCyan = mod(fragCoord.x + mod(fragCoord.y,2.0),2.0);
@@ -299,14 +308,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 	cameraPos = CameraPath(gTime + 0.0);
     cameraPos.x -= 3.0;
-	//--------------------------
-	float imy=abs(iMouse.y*0.3);
-	cameraPos.y+=imy/(1.0+0.001*imy);
-	//--------------------------
-	
 	camTar	 = CameraPath(gTime + .009);
-	// cameraPos.y += Terrain(CameraPath(gTime + .009).xz).x;
-	cameraPos.y += Terrain(camTar.xz).x;
+	cameraPos.y += Terrain(CameraPath(gTime + .009).xz).x;
 	camTar.y = cameraPos.y;
 	
 	float roll = .4*sin(gTime+.5);

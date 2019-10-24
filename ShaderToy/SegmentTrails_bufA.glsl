@@ -1,5 +1,5 @@
 #iChannel0 "self"
-#iChannel1 "file://./SegmentTrails_bufB.glsl"
+#iChannel1 "file://./ShaderToy/SegmentTrails_bufB.glsl"
 
 float pi = 3.14159265358979323;
 #define clamps(x) clamp(x, 0., 1.)
