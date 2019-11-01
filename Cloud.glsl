@@ -31,18 +31,17 @@ vec2 map(vec3 pos)
 vec3 RayMarch(vec2 coord)
 {
     vec3 baseColor = vec3(0.8,0.8,1.0);
-    vec3 fogColor = 0.3*vec3(0.0,0.5,1.0);
+    vec3 fogColor = 0.3*vec3(0.4,0.4,1.0);
     vec3 orientation = normalize(vec3(coord, 1.0));
 
     vec3 pos = vec3(coord, 0.0);
     vec3 color = vec3(0.0);
     float alpha = 0.0;
-    float trace = 5.0;
+    float trace = 3.0;
     float len = length(coord);
     vec3 stage=vec3(0.6);
-    // float depth=0.1+1.0/(len+1e-5);
-    // float depth2=0.1+1.0/(len+0.1);
-    for (int i = 0; i < 4; i++) {
+    float fogC=1.0;
+    for (int i = 0; i < 20; i++) {
 
         vec3 _pos=pos + (trace) * orientation;
         vec2 k = map(_pos);
@@ -50,19 +49,19 @@ vec3 RayMarch(vec2 coord)
         vec2 k2=map(_pos-0.09);
 
         
-        vec3 stage1 = baseColor* k.x;
+        vec3 stage1 = baseColor;
 
-        stage1=mix(stage1,vec3(1.0,0.5,0.0),0.2*(k1.x-k.x));
-        // stage1=mix(stage1,vec3(0.0,0.5,1.0),0.2*(k2.x-k.x));
+        stage1=mix(stage1,vec3(1.0,0.5,0.0),0.3*(k1.x+k2.x-k.x))* k.x;
+
+        float fog_cur=pow(0.9,trace);
+        stage1=mix(stage1,fogColor,(fogC-fog_cur));
+        fogC=fog_cur;
         stage1*=(1.0 - alpha) ;
-        // stage=mix(stage,stage1,0.5);
         color+=(1.0-alpha)*mix(color,stage1,1.0-alpha);
         alpha += (1.0-alpha)*k.x;
         trace += 1.0;
     }
-    //
-    // float fogC=pow(0.95,depth);
-    color=mix(fogColor,color,alpha);
+    color=mix(fogColor*8.0,color,alpha);
     return color;
 }
 
@@ -75,8 +74,5 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
     vec3 color = RayMarch(coord);
 
-    // float fogC = pow(0.97, k.x);
-    // vec3 fogColor = vec3(0.7);
-    // baseColor = mix(fogColor, baseColor, fogC);
     fragColor = vec4(color, 1.0);
 }

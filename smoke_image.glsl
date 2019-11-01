@@ -1,47 +1,25 @@
-// #ixChannel0 "file://./Smoke/bufA.glsl"
-#iChannel0 "file://./smoke_bufA.glsl"
+// #iCxhannel0 "file://./Smoke/bufA.glsl"
+#include "./smoke_common.glsl"
+#iChannel0 "file://./smoke_blur.glsl"
 #iChannel1 "self"
 
-vec3 norm_fract(vec3 x)
-{
-    vec3 p=fract(x);
-    return 8.0*p*(1.0-p)-1.0;
-}
-vec3 fbm_noise(vec2 coord,float ft)
-{
-    float len=length(coord);
-    vec3 kp=vec3(coord,len+1.0);
-    float fre=1.0;
-    float ap=1.0;
-    vec3 d=vec3(1.0);
-    for(int i=0;i<5;i++)
-    {
-        kp=mix(kp,kp.yzx,0.1);
-        kp+=sin(0.75*kp.zxy * fre+ft*iTime);
-        d -= abs(cross(norm_fract(kp), norm_fract(kp.yzx)) * ap);
-        fre*=-2.0;
-        ap*=0.5;
-    }
-    return vec3((d));
-}
-
-#define c_p 0.3
+#define c_p 0.1
 vec4 DrawEmit0_c(vec2 coord)
 {
 
-    vec2 target=coord-vec2(-0.0-0.5*cos(0.3*iTime),0.5*sin(0.3*iTime));
+    vec2 target=coord-vec2(-0.0-RADIUS*cos(0.3*iTime),RADIUS*sin(0.3*iTime));
     vec4 color=c_p*vec4(0.0,1.0,0.0,0.0);
     float m2=dot(target,target);
-    float power=smoothstep(0.001,0.0,m2);
+    float power=smoothstep(RSIZE,0.0,m2);
     return color*power;
 }
 vec4 DrawEmit1_c(vec2 coord)
 {
 
-    vec2 target=coord-vec2(0.0+0.5*cos(0.3*iTime),-0.5*sin(0.3*iTime));
+    vec2 target=coord-vec2(0.0+RADIUS*cos(0.3*iTime),-RADIUS*sin(0.3*iTime));
     vec4 color=c_p*vec4(1.0,0.0,0.0,0.0);
     float m2=dot(target,target);
-    float power=smoothstep(0.001,0.0,m2);
+    float power=smoothstep(RSIZE,0.0,m2);
     return color*power;
 }
 vec4 BlurSampler(sampler2D tex,vec2 uv,vec2 w)
@@ -65,6 +43,8 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord)
         fragColor = vec4(0.0001/(1.0-k));
         return;
     }
+
+
     const float dt=0.14;
     vec2 w=1.0/iResolution.xy;
     vec2 uv=fragCoord/iResolution.xy;
@@ -78,11 +58,15 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord)
     vec4 color=vec4(0.0001);
     color+=DrawEmit0_c(coord);
     color+=DrawEmit1_c(coord);
-    vec2 t_uv=uv - dt*vel*w*3.;
+    vec2 t_uv=uv + vel*w*P;
     // t_uv+=0.0003*fbm_noise(uv,0.3).xy;
     color+= BlurSampler(iChannel1,t_uv , w)*k; //advection
+    // color+= texture(iChannel1,t_uv)*k; //advection
 
     color=clamp(color,vec4(0.0),vec4(1.0));
     fragColor=vec4(color.xyz,1.0);
+
 }
+
+
 

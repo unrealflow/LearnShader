@@ -1,7 +1,4 @@
 
-//随机连续条纹
-
-
 float fun(vec2 uv){
   vec4 baseColor=vec4(0.1,0.3,0.8,1.0);
   const float c1=2.33;

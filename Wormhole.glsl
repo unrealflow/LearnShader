@@ -1,16 +1,6 @@
 #iChannel0 "self"
 #define PI 3.141592654
 
-float noise(float a)
-{
-    float k = fract(sin(1331.3333 * a + 23.123) * 1331.13333);
-    return k;
-}
-vec3 norm_fract(vec3 x)
-{
-    vec3 p=fract(x);
-    return 8.0*p*(1.0-p)-1.0;
-}
 vec2 Rot(vec2 v, float angle)
 {
     return vec2(v.x * cos(angle) + v.y * sin(angle),
@@ -38,17 +28,6 @@ float map(float l)
     return sqrt(lm4 / (l * l) + lm2);
     // return 1.0/(l+1e-5);
 }
-vec3 DrawFlow(vec2 uv, float weight)
-{
-    vec3 baseColor = vec3(0.0);
-    float angle = iTime + 0.5 * PI;
-    vec2 bias = vec2(cos(angle), sin(angle)) * 0.01;
-    baseColor += texture(iChannel0, uv + bias).xyz * weight * 0.5;
-    baseColor += texture(iChannel0, uv - bias).xyz * weight * 0.5;
-    // baseColor+=texture(iChannel0,uv).xyz*0.5;
-
-    return baseColor;
-}
 vec3 DrawCloud(float dis, float angle, vec2 coord)
 {
     vec3 baseColor = vec3(0.0, 0.0, 0.0);
@@ -71,8 +50,8 @@ vec3 DrawCloud(float dis, float angle, vec2 coord)
         fre *= -2.0;
         ap *= 0.5;
     }
-    // float len2=dot(coord,coord);
-    // d+=len2*4.0;
+    float len2=dot(coord,coord);
+    d+=len2*4.0;
     return baseColor + cloudColor * d;
 }
 vec3 Render(vec2 coord)

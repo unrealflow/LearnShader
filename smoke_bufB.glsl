@@ -1,7 +1,5 @@
 #include "./smoke_common.glsl"
-#iChannel0 "file://./smoke_blur.glsl"
-// #iCxhannel0 "file://./smoke_bufB.glsl"
-
+#iChannel0 "file://./smoke_bufA.glsl"
 
 void mainImage(out vec4 fragColor,in vec2 fragCoord)
 {
