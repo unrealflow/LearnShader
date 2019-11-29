@@ -1,5 +1,4 @@
 #define PI 3.141592654
-#define MOD2 vec2(3.07965, 7.4235)
 
 vec2 hash22(vec2 p)
 {
@@ -42,11 +41,11 @@ float lerp(float a, float b, float x)
 
 vec3 Remap(float r)
 {
-    vec3 color0 = vec3(0.2);
-    vec3 color1 = vec3(0.5);
-    vec3 color2 = vec3(1.0, 0.8, 0.0);
-    vec3 color3 = vec3(1.0, 0.0, 0.0);
-    float step1 = 0.01;
+    vec3 color0 = vec3(0.3,0.1,0.1);
+    vec3 color1 = vec3(0.6,0.3,0.3);
+    vec3 color2 = vec3(1.0, 0.6, 0.0);
+    vec3 color3 = vec3(1.0, 0.3, 0.0);
+    float step1 = 0.1;
     float step2 = step1 + 0.2;
     float step3 = step2 + 0.3;
     float f1 = smoothstep(0.0, step1, r);
@@ -67,21 +66,25 @@ vec3 Draw(vec2 coord)
 
     float r = length(coord);
 
-    float angle = 0.5 * atan(coord.y / coord.x) * sign(coord.x) + PI * 0.25; //0---0.5PI
-    float f4 = r * (1.0 - 0.99 * sin(angle)) * 110.0;
+    float angle = 0.5*atan(coord.y , coord.x)+0.25*PI; //0---0.5PI
+    float trace = r * (1.0 - 0.995 * sin(angle)) * 230.0;
 
     vec2 c1 = coord * 10.0 + vec2(0.0, -time);
-    f4 += 0.1 * smoothstep(0.05, 0.2, coord.y) * fbm(c1);
+    trace += 0.1 * smoothstep(0.05, 0.2, coord.y) * fbm(c1);
 
     vec2 c2 = coord * 5.0 + vec2(0.0, 0.5*-time);
     float f5 = 1.0 + 0.7 * fbm(c2);
 
-    return Remap(f4) * f5 * smoothstep(-0.05, 0.3, coord.y);
+    return Remap(trace) * f5 * smoothstep(-0.05, 0.3, coord.y);
 }
-void main()
-{
-    vec2 uv = gl_FragCoord.xy / iResolution.xy;
-    vec2 coord = uv - vec2(0.5, 0.1);
 
-    gl_FragColor = vec4(Draw(coord), 1.0); //
+void mainImage(out vec4 fragColor,in vec2 fragCoord)
+{
+    vec2 uv=fragCoord/iResolution.xy;
+
+    vec2 coord = uv - vec2(0.5, 0.1);
+    coord.x*=iResolution.x/iResolution.y;
+    
+
+    fragColor=vec4(Draw(coord),1.0);
 }

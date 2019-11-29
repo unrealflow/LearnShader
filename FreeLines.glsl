@@ -2,7 +2,7 @@
 
 #define PI 3.141592654
 
-#define P_NUMS 10U
+#define P_NUMS 20U
 #define Radius 0.005
 float RadicalInverse(uint Base, uint i)
 {
@@ -23,17 +23,10 @@ vec2 GetPoint(uint i)
     float b = RadicalInverse(5U, i);
     return vec2(b * sin(a), b * cos(a));
 }
-vec3 DrawPoint(vec2 center, vec2 coord)
-{
-    float l = distance(center, coord);
-    vec3 color = vec3(0.3, 1.0, 0.0);
 
-    float f = 1.0 - smoothstep(0.0, Radius * (1.0 + length(coord)), l);
-    return color * f;
-}
 vec3 DrawLine(vec2 pos0,vec2 pos1,vec2 coord)
 {
-    vec3 color = vec3(0.3, 1.0, 0.0);
+    vec3 color=abs(sin(vec3(1.0,pos0))+cos(0.7+2.0*vec3(pos1.x,1.0,pos1.y)));
     float d0=distance(pos0,pos1);
     float d1=distance(pos0,coord);
     float d2=distance(pos1,coord);
@@ -48,7 +41,7 @@ vec2 NoisePos(vec2 inPos, float fre, float bias)
     float f0 = sin(p + inPos.x) *  PI;
     float f1 = cos(p + inPos.y) *  PI;
     float f3 = sin(p*0.7 + f1*inPos.x + f0 * inPos.y) *  PI;
-    float f4 = cos(p*0.7 + f0*inPos.y - f1 * inPos.x);
+    float f4 = 0.7*cos(p*0.7 + f0*inPos.y - f1 * inPos.x);
     return vec2(f4 * sin(f3), f4 * cos(f3));
 }
 vec3 track(vec2 inPos, vec2 coord)
@@ -60,7 +53,14 @@ vec3 track(vec2 inPos, vec2 coord)
     color += DrawLine(pos0,pos1,coord);
     return color;
 }
-
+vec4 BlurSampler(sampler2D tex,vec2 uv,vec2 w)
+{
+    vec4 color=texture(tex,uv+vec2(0.0,w.y));
+    color+=texture(tex,uv-vec2(0.0,w.y));
+    color+=texture(tex,uv+vec2(w.x,0.0));
+    color+=texture(tex,uv-vec2(w.x,0.0));
+    return 0.25*color;
+}
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord){
 
@@ -74,8 +74,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
         vec2 pos = GetPoint(i);
         vec3 tpColor = track(pos, coord);
         float fc = smoothstep(-0.7, 0.7, sin(iTime+PI*float(i)));
-        color += mix(tpColor, tpColor.zxy, fc);
+        color =max(color,mix(tpColor, tpColor.zxy, fc));
     }
-    color += texture(iChannel0, uv).xyz * 0.99;
+    color += BlurSampler(iChannel0, uv,1.0/iResolution.xy).xyz * 0.99;
     fragColor = vec4(color, 1.0);
 }
