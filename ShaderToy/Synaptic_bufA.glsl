@@ -51,10 +51,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     if (iFrame < 10) 
     {
         if (fragCoord.y < 30.)
-        	col = ((texture(iChannel1, q*1.9))-.5)*10.;
+        	col = ((texture(iChannel1, q*1.0))-.5)*10.;
         else
         {
-            col = ((texture(iChannel1, q*1.9))-.5)*.5;
+            col = ((texture(iChannel1, q*1.0))-.5)*.5;
         }
     }
     

@@ -4,11 +4,11 @@
 void mainImage(out vec4 fragColor,in vec2 fragCoord)
 {
     
-    if (iFrame < 20)
-    {
-        fragColor = vec4(0.0,0.0,0.5,0);
-        return;
-    }
+    // if (iFrame < 20)
+    // {
+    //     fragColor = vec4(0.0,0.0,0.5,0);
+    //     return;
+    // }
     vec2 uv=fragCoord/iResolution.xy;
     float aspect=iResolution.x/iResolution.y;;
     vec2 coord=uv*2.0-1.0;

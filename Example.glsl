@@ -1,4 +1,4 @@
-#iChannel0 "file://./image/1.jpg"
+#iChannel0 "file://./ShaderToyShaderToy/image/1.jpg"
 
 
 float cartoon(float _in){
@@ -38,8 +38,8 @@ void main(){
   gl_FragColor = vec4( cartoonLen(vec3(r,g,b)), 1.0);
 
 
-  uv0=uv0+vec2(r,b)*0.02;
-  gl_FragColor=texture2D(iChannel0,uv0);
+  // uv0=uv0+vec2(r,b)*0.02;
+  // gl_FragColor=texture2D(iChannel0,uv0);
 
 
   // vec2 center=vec2(0.5,0.5);
