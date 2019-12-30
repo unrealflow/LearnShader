@@ -76,6 +76,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
         float fc = smoothstep(-0.7, 0.7, sin(iTime+PI*float(i)));
         color =max(color,mix(tpColor, tpColor.zxy, fc));
     }
-    color += BlurSampler(iChannel0, uv,1.0/iResolution.xy).xyz * 0.99;
+    color =max(color,BlurSampler(iChannel0, uv,1.0/iResolution.xy).xyz * 0.99);
     fragColor = vec4(color, 1.0);
 }

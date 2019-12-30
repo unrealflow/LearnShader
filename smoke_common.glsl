@@ -77,6 +77,12 @@ vec4 Solver(sampler2D smp, vec2 uv, vec2 w, float time)
     data.xyw=BlurSampler(smp,t_uv,w).xyw;
     data.xy=data.xy*0.999;
     data.xy+=viscForce-0.1*densDif;
+
+    data.w = (tr.y - tl.y - tu.x + td.x);
+    vec2 vort = vec2(abs(tu.w) - abs(td.w), abs(tl.w) - abs(tr.w));
+    vort *= 0.11/length(vort + 1e-9)*data.w;
+    data.xy += vort;
+
     return data;
 }
 vec4 render(sampler2D iChannel0,vec2 uv,vec2 coord,vec2 w,float iTime)
