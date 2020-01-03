@@ -40,9 +40,18 @@ vec3 draw_particles(vec2 uv, vec2 coord)
     return baseColor;
 }
 
+vec4 BlurSampler(sampler2D tex,vec2 uv,vec2 w)
+{
+    vec4 color=texture(tex,uv+vec2(0.0,w.y));
+    color+=texture(tex,uv-vec2(0.0,w.y));
+    color+=texture(tex,uv+vec2(w.x,0.0));
+    color+=texture(tex,uv-vec2(w.x,0.0));
+    return 0.25*color;
+}
 void mainImage(out vec4 fragColor, in vec2 fragCoord){
 
     vec2 uv = fragCoord.xy / iResolution.xy;
+    vec2 w=1.0/iResolution.xy;
     float f = iResolution.x / iResolution.y;
     vec2 coord = uv - vec2(0.5,0.3);
     coord.x *= f;
@@ -51,7 +60,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
 
     vec3 t_color = color1 + color2;
     // t_color=texture(iChannel0,uv).xyz;
-    vec3 preColor = texture(iChannel0, uv).xyz;
+    vec3 preColor = BlurSampler(iChannel0, uv,w).xyz;
     t_color=mix(t_color,preColor.xyz,0.3);
     fragColor = vec4(t_color, 1.0);
 }

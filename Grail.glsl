@@ -1,4 +1,8 @@
 ﻿#iChannel0 "file://./Feather.glsl"
+#iChannel1 "self"
+
+#define AA 2
+
 #define PI 3.141592654
 vec3 norm_fract(vec3 x)
 {
@@ -73,17 +77,26 @@ vec3 DrawLines(vec2 coord,float fre,float ap,float bias)
 
 void mainImage(out vec4 fragColor,in vec2 fragCoord)
 {
-    vec2 uv=fragCoord/iResolution.xy;
-    vec2 w=1.0/iResolution.xy;
-    vec2 coord=uv*2.0-1.0;
-    coord.x*=iResolution.x/iResolution.y;
-    vec3 color=vec3(0.0);
-    float ap=abs(fbm_noise(coord,0.5).x);
-    // color=max(color,DrawCenter(coord));
-    color=max(color,BlurSampler(iChannel0,uv,w).xyz)*(1.0+0.2*ap);
-    color=max(color,DrawLines(coord,1.0,ap,0.0+0.2*iTime));
-    color=max(color,0.5*DrawLines(coord,3.0,ap,PI*0.2+0.3*iTime));
-    color=max(color,0.3*DrawLines(coord,6.0,ap,PI*0.2+0.5*iTime));
-
-    fragColor=vec4(color,1.0);
+    vec3 t_color=vec3(0.0);
+    for(int m=-AA;m<=AA;m++)
+    for(int n=-AA;n<=AA;n++)
+    {
+        vec2 uv=(fragCoord+vec2(m,n)/vec2(2*AA+1))/iResolution.xy;
+        vec2 w=1.0/iResolution.xy;
+        vec2 coord=uv*2.0-1.0;
+        coord.x*=iResolution.x/iResolution.y;
+        vec3 color=vec3(0.0);
+        float ap=abs(fbm_noise(coord,0.5).x);
+        // color=max(color,DrawCenter(coord));
+        color=max(color,BlurSampler(iChannel0,uv,w).xyz)*(1.0+0.2*ap);
+        color=max(color,DrawLines(coord,1.0,ap,0.0+0.2*iTime));
+        color=max(color,0.5*DrawLines(coord,3.0,ap,PI*0.2+0.3*iTime));
+        color=max(color,0.3*DrawLines(coord,6.0,ap,PI*0.2+0.5*iTime));
+        vec3 preColor=texture(iChannel1,uv).xyz;
+        color=mix(color,preColor,0.5);
+        t_color+=color;
+    }
+    float k=float(2*AA+1);
+    t_color/=k*k;
+    fragColor=vec4(1.2*t_color,1.0);
 }

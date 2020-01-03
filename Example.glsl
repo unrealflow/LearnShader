@@ -1,4 +1,4 @@
-#iChannel0 "file://./ShaderToyShaderToy/image/1.jpg"
+#iChannel0 "file://./ShaderToy/image/1.jpg"
 
 
 float cartoon(float _in){
