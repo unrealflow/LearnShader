@@ -1,6 +1,5 @@
 #iChannel0 "file://./point.glsl"
 #iChannel1 "self"
-
 vec2 GetUV(uint index)
 {
     float y=floor(float(index)/iResolution.x);
@@ -28,5 +27,5 @@ void mainImage(out vec4 fragColor,in vec2 fragCoord)
         f=max(f,color*smoothstep(0.01,0.0,distance(uv,pos)+distance(uv,pos2)-0.003*length(dir)));
     }
     vec4 preColor=texture(iChannel1,uv);
-    fragColor=mix(preColor,5.0*vec4(vec3(f),1.0),0.03);
+    fragColor=mix(preColor,5.0*vec4(vec3(f),1.0),0.05);
 }
