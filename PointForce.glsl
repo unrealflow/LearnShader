@@ -1,5 +1,5 @@
 const float d=0.1;
-const float fm=1.0;
+const float fm=2.0;
 
 
 float GetForce(float r)

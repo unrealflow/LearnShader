@@ -70,10 +70,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         force+=GetForce(pos,pr.xy);
     }
     force+=vec2(0.0,-0.01);
-    dir+=1.1*force;
+    dir+=0.1*force;
     pos+=dir*0.001;
 
-    dir*=0.99;
+    dir*=0.95;
 
     if (pos.x < 0.0 || pos.x > 1.0) {
         pos.x = fract(2.0 - pos.x);
