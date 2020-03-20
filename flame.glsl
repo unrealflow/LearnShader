@@ -7,6 +7,22 @@ vec2 hash22(vec2 p)
 
     return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
 }
+vec3 fbm_noise(vec3 pos,float ft)
+{
+    vec3 kp=pos;
+    float fre=1.0;
+    float ap=0.5;
+    vec3 d=vec3(1.0);
+    for(int i=0;i<5;i++)
+    {
+        // kp=mix(kp,kp.yzx,0.1);
+        kp+=sin(0.75*kp.zxy * fre+ft*iTime);
+        d -= abs(cross(sin(kp), cos(kp.yzx)) * ap);
+        fre*=-1.9;
+        ap*=0.5;
+    }
+    return vec3(abs(d-vec3(0.0,1.0,1.0)));
+}
 float simplex_noise(vec2 p)
 {
     const float K1 = 0.366025404; // (sqrt(3)-1)/2;
@@ -62,7 +78,7 @@ vec3 Remap(float r)
 }
 vec3 Draw(vec2 coord)
 {
-    float time = 2.0 * iTime;
+    float time = 5.0 * iTime;
 
     float r = length(coord);
 

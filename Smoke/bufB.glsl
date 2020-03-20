@@ -1,5 +1,5 @@
-#include "./Smoke/Common.glsl"
-#iChannel0 "file://./Smoke/bufA.glsl"
+#include "./Common.glsl"
+#iChannel0 "file://./bufA.glsl"
 
 //Chimera's Breath
 //by nimitz 2018 (twitter: @stormoid)

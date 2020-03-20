@@ -1,4 +1,4 @@
-#iChannel0 "file://./Smoke/bufD.glsl"
+#iChannel0 "file://./bufD.glsl"
 #iChannel1 "self"
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )

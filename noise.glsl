@@ -67,13 +67,13 @@ vec3 fbm_noise(vec2 coord,float ft)
     vec3 d=vec3(1.0);
     for(int i=0;i<5;i++)
     {
-        kp=mix(kp,kp.yzx,0.1);
+        // kp=mix(kp,kp.yzx,0.1);
         kp+=sin(0.75*kp.zxy * fre+ft*iTime);
-        d -= abs(cross(norm_fract(kp), norm_fract(kp.yzx)) * ap);
-        fre*=-2.0;
+        d -= abs(cross(sin(kp), cos(kp.yzx)) * ap);
+        fre*=-1.9;
         ap*=0.5;
     }
-    return vec3((d));
+    return vec3(abs(d-0.2));
 }
 
 void main()
@@ -81,9 +81,9 @@ void main()
     vec2 uv = gl_FragCoord.xy / iResolution.xy;
     vec2 coord=uv*2.0-1.0;
     coord.x*=iResolution.x/iResolution.y;
-    vec3 color=noise3(coord);
+    // vec3 color=noise3(coord);
     // vec3 color=norm_noise(coord);
-    // vec3 color=fbm_noise(coord*10.0,0.0);
+    vec3 color=fbm_noise(coord*10.0,1.0);
     // color=mix(color,texture(iChannel0,uv).xyz,0.95);
     gl_FragColor = vec4(color, 1.0);
 }

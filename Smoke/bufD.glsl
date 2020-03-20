@@ -1,11 +1,8 @@
-#include "./Smoke/Common.glsl"
-#iChannel0 "file://./Smoke/bufA.glsl"
+#include "./Common.glsl"
+#iChannel0 "file://./bufA.glsl"
 #iChannel1 "self"
 
-#iChannel0::MinFilter "Linear"
-#iChannel0::MagFilter "Linear"
-#iChannel1::MinFilter "Linear"
-#iChannel1::MagFilter "Linear"
+
 //Chimera's Breath
 //by nimitz 2018 (twitter: @stormoid)
 

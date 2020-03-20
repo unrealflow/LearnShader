@@ -1,5 +1,6 @@
 #include "./smoke_common.glsl"
-#iChannel0 "file://./smoke_bufB.glsl"
+#iChannel0 "self"
+// #iChxannel0 "file://./smoke_bufB.glsl"
 
 void mainImage(out vec4 fragColor,in vec2 fragCoord)
 {
